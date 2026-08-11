@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BIOLOGY TRIAL TEST 2 - BY SIR SAMUEL</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #e0f2fe;
+            color: #0f172a;
+            overflow-x: hidden;
+        }
+
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 750px;
+            margin: 30px auto;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+        .card input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+
+        .timer-bar {
+            position: sticky;
+            top: 10px;
+            z-index: 1000;
+            background: #0284c7;
+            color: #ffffff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        header {
+            text-align: center;
+            background: #0369a1;
+            color: #ffffff;
+            padding: 25px 0;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        h1 { margin: 0; font-size: 2.2em; }
+        h2 { margin: 5px 0 0 0; font-weight: 300; font-size: 1.3em; }
+
+        .section-title {
+            background: #1e40af;
+            color: #ffffff;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        #floating-ai-bot {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 25px;
+            z-index: 9999;
+            text-align: center;
+        }
+
+        .speech-bubble {
+            position: absolute;
+            top: -45px;
+            right: -10px;
+            background: #ffffff;
+            color: #0369a1;
+            border: 2px solid #06b6d4;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: bold;
+            white-space: nowrap;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .speech-bubble.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .cyber-head {
+            width: 85px;
+            height: 75px;
+            background: #0f172a;
+            border: 3px solid #06b6d4;
+            border-radius: 20px;
+            box-shadow: 0 0 15px #06b6d4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .cyber-visor {
+            width: 58px;
+            height: 24px;
+            background: #0284c7;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 6px;
+        }
+
+        .eye-socket {
+            width: 14px;
+            height: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cyber-eye {
+            width: 8px;
+            height: 8px;
+            background: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #ffffff;
+        }
+
+        .cyber-mouth {
+            width: 22px;
+            height: 6px;
+            border-bottom: 3px solid #06b6d4;
+            border-radius: 0 0 10px 10px;
+        }
+
+        #floating-ai-bot.angry .cyber-head {
+            border-color: #ef4444;
+            box-shadow: 0 0 20px #ef4444;
+        }
+        #floating-ai-bot.angry .speech-bubble { color: #dc2626; border-color: #ef4444; }
+
+        .question {
+            background: #ffffff;
+            padding: 18px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border: 1px solid #cbd5e1;
+            text-align: left;
+        }
+        .question p { font-weight: 600; margin-top: 0; color: #1e3a8a; font-size: 1.05em; }
+        .options { list-style-type: none; padding-left: 0; }
+        .options li { margin-bottom: 8px; }
+        .options label { cursor: pointer; display: block; padding: 10px 12px; border-radius: 6px; transition: background 0.2s; }
+        .options label:hover { background: #f0f9ff; }
+
+        .option-correct {
+            background-color: #d1fae5 !important;
+            border: 1px solid #10b981 !important;
+            color: #065f46 !important;
+            font-weight: bold;
+        }
+        .option-wrong {
+            background-color: #fee2e2 !important;
+            border: 1px solid #ef4444 !important;
+            color: #991b1b !important;
+            font-weight: bold;
+        }
+
+        #balloon-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
+            overflow: hidden;
+        }
+
+        .balloon {
+            position: absolute;
+            bottom: -100px;
+            width: 50px;
+            height: 70px;
+            border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+            animation: floatUp 5s ease-in-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            80% { opacity: 1; }
+            100% { transform: translateY(-120vh) scale(1.2); opacity: 0; }
+        }
+
+        .analytics-grid { display: flex; gap: 15px; margin-bottom: 20px; }
+        .analytic-box { flex: 1; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 15px; text-align: center; }
+        .analytic-box h4 { margin: 0; font-size: 0.9em; color: #64748b; }
+        .analytic-box div { font-size: 1.5em; font-weight: bold; color: #0284c7; margin-top: 5px; }
+
+        .btn {
+            display: inline-block;
+            width: 100%;
+            background: #2563eb;
+            color: white;
+            padding: 14px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background 0.2s;
+        }
+        .btn:hover { background: #1d4ed8; }
+        .btn-secondary { background: #475569; }
+        .btn-secondary:hover { background: #334155; }
+        .btn-success { background: #16a34a; }
+        .btn-success:hover { background: #15803d; }
+        .btn-danger { background: #dc2626; }
+        .btn-danger:hover { background: #b91c1c; }
+
+        .score-headline { font-size: 2.2em; color: #16a34a; font-weight: bold; margin: 15px 0 5px 0; }
+        .percentage-badge {
+            display: inline-block;
+            background: #22c55e;
+            color: white;
+            font-size: 1.8em;
+            font-weight: bold;
+            padding: 8px 25px;
+            border-radius: 50px;
+            margin: 10px 0 20px 0;
+            box-shadow: 0 4px 10px rgba(34, 197, 94, 0.4);
+        }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+        th, td { border: 1px solid #cbd5e1; padding: 10px; text-align: left; vertical-align: middle; }
+        th { background: #0369a1; color: white; }
+    </style>
+</head>
+<body>
+
+    <div id="balloon-container"></div>
+
+    <div id="floating-ai-bot">
+        <div id="speech-bubble" class="speech-bubble">Stay focused! 💪</div>
+        <div class="cyber-head">
+            <div class="cyber-visor">
+                <div class="eye-socket"><div class="cyber-eye"></div></div>
+                <div class="eye-socket"><div class="cyber-eye"></div></div>
+            </div>
+            <div class="cyber-mouth"></div>
+        </div>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="login-screen" class="screen active">
+        <div class="card">
+            <h1>BIOLOGY TRIAL TEST</h1>
+            <h3>BY SIR SAMUEL</h3>
+            <p style="color:#0284c7; font-weight:bold;">⚠️ Section 3: 100 Unique Questions (Q1 - Q100) | Time Allowed: 60 Minutes<br>Tab switching or losing focus will deduct 2 marks per warning!</p>
+            <input type="text" id="student-name-input" placeholder="Enter Full Name..." required>
+            <button class="btn" id="start-btn" onclick="startTest()">Take Test</button>
+            <button class="btn btn-secondary" onclick="showTeacherDashboard()" style="margin-top: 10px;">Teacher Dashboard</button>
+        </div>
+    </div>
+
+    <!-- EXAM SCREEN -->
+    <div id="exam-screen" class="screen">
+        <div class="timer-bar">
+            <span>👤 Candidate: <span id="display-student-name"></span></span>
+            <span>⚠️ Warnings: <span id="warning-count-display">0</span></span>
+            <span>⏱️ Time Remaining: <span id="timer-display">01:00:00</span></span>
+        </div>
+
+        <header>
+            <h1>BIOLOGY TRIAL TEST</h1>
+            <h2>SECTION 3: INSECT BIOLOGY, ECOSYSTEMS, CYTOLOGY & MOLECULAR GENETICS (Q1 - Q100)</h2>
+        </header>
+
+        <form id="test-form">
+            <div class="section-title"><h2>SECTION 3: 100 Comprehensive Questions</h2></div>
+            <div id="mcq-sec3-wrapper"></div>
+
+            <button type="button" id="submit-btn" class="btn" onclick="submitTest()">Submit Test</button>
+        </form>
+    </div>
+
+    <!-- RESULTS SCREEN -->
+    <div id="results-screen" class="screen">
+        <div class="card" id="results-card">
+            <h1>🎉 TEST COMPLETED 🎉</h1>
+            <p style="font-size: 1.2em; margin-bottom: 0;">STUDENT: <strong id="result-student-name"></strong></p>
+            
+            <div class="score-headline" id="score-display">100 / 100</div>
+            <div class="percentage-badge" id="percentage-display">100%</div>
+            <p id="deduction-notice" style="color: #dc2626; font-weight: bold;"></p>
+
+            <button class="btn btn-success" id="review-btn" onclick="toggleReviewSection()">🔍 View Answer Key & Review Mistakes</button>
+            <button class="btn btn-secondary" onclick="resetToLogin()">Finish & Log Out</button>
+
+            <div id="review-section" style="display: none; margin-top: 25px; text-align: left;">
+                <hr style="border: 0; border-top: 2px solid #cbd5e1; margin-bottom: 20px;">
+                <h3 style="text-align: center; color: #1e3a8a;">Detailed Answer Key & Review (Q1 - Q100)</h3>
+                <div id="review-questions-wrapper"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TEACHER DASHBOARD -->
+    <div id="teacher-screen" class="screen">
+        <div class="card" style="max-width: 950px;">
+            <h2>Teacher / Admin Dashboard</h2>
+
+            <div class="analytics-grid">
+                <div class="analytic-box">
+                    <h4>Total Candidates</h4>
+                    <div id="total-candidates-val">0</div>
+                </div>
+                <div class="analytic-box">
+                    <h4>Class Average</h4>
+                    <div id="class-avg-val">0%</div>
+                </div>
+                <div class="analytic-box">
+                    <h4>Highest Score</h4>
+                    <div id="highest-score-val">0 / 100</div>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Tab Switch Warnings</th>
+                        <th>Deductions</th>
+                        <th>Final Score</th>
+                        <th>Percentage</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody id="results-table-body"></tbody>
+            </table>
+            
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn btn-success" onclick="exportToCSV()">📄 Export to CSV</button>
+                <button class="btn btn-danger" onclick="clearDashboardData()">🗑️ Clear Submissions</button>
+                <button class="btn btn-secondary" onclick="resetToLogin()">Back to Main Screen</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // EXACTLY 100 UNIQUE QUESTIONS FOR SECTION 3
+        const section3Questions = [
+            // PART 1: INSECT BIOLOGY & PESTS (Q1 - Q25)
+            { id: "q1", q: "[Q1] Which type of metamorphosis is characterized by four distinct stages: egg, larva, pupa, and adult?", options: ["A. Incomplete metamorphosis", "B. Complete metamorphosis", "C. Ametabolous development", "D. Gradual metamorphosis"], ans: "B" },
+            { id: "q2", q: "[Q2] The elongated snout of the grain weevil (Sitophilus granarius) is primarily adapted for:", options: ["A. Sucking plant sap", "B. Boring holes into cereal grains to deposit eggs", "C. Piercing animal skin", "D. Filtering water particles"], ans: "B" },
+            { id: "q3", q: "[Q3] What type of mouthparts do adult houseflies (Musca domestica) possess?", options: ["A. Biting and chewing", "B. Sponging and lapping", "C. Piercing and sucking", "D. Siphoning"], ans: "B" },
+            { id: "q4", q: "[Q4] Butterflies belong to which insect order?", options: ["A. Diptera", "B. Lepidoptera", "C. Hymenoptera", "D. Coleoptera"], ans: "B" },
+            { id: "q5", q: "[Q5] In a honeybee colony, worker bees are:", options: ["A. Fertile females", "B. Sterile females", "C. Fertile males", "D. Sterile males"], ans: "B" },
+            { id: "q6", q: "[Q6] The 'waggle dance' performed by honeybees communicates:", options: ["A. Presence of danger", "B. Distance and direction of a food source", "C. Queen bee replacement", "D. Hive temperature levels"], ans: "B" },
+            { id: "q7", q: "[Q7] Which stage of the butterfly life cycle is primarily responsible for feeding and growth?", options: ["A. Egg", "B. Larva (Caterpillar)", "C. Pupa (Chrysalis)", "D. Adult (Imago)"], ans: "B" },
+            { id: "q8", q: "[Q8] Grain weevil larvae feed and complete their development mainly:", options: ["A. On the surface of leaves", "B. Inside stored cereal grains", "C. In moist damp soil", "D. Inside animal tissue"], ans: "B" },
+            { id: "q9", q: "[Q9] Houseflies are vectors for pathogens primarily because:", options: ["A. They inject venom during bites", "B. Hairs and sticky pads on their legs carry pathogens onto food", "C. They lay eggs inside human bloodstream", "D. They act as intermediate hosts for malaria"], ans: "B" },
+            { id: "q10", q: "[Q10] What is the primary function of the pupal stage in insects undergoing complete metamorphosis?", options: ["A. Rapid feeding and cell growth", "B. Tissue reorganization and transformation into adult form", "C. Gamete production and mating", "D. Dispersal to new geographical locations"], ans: "B" },
+            { id: "q11", q: "[Q11] Male honeybees, known as drones, develop from unfertilized eggs through a process called:", options: ["A. Binary fission", "B. Parthenogenesis", "C. Fragmentation", "D. Budding"], ans: "B" },
+            { id: "q12", q: "[Q12] The breathing tubes that carry oxygen directly to body tissues in insects are called:", options: ["A. Gills", "B. Tracheae", "C. Book lungs", "D. Malpighian tubules"], ans: "B" },
+            { id: "q13", q: "[Q13] Excretory waste in insects is removed mainly by which specialized structures?", options: ["A. Nephridia", "B. Malpighian tubules", "C. Flame cells", "D. Green glands"], ans: "B" },
+            { id: "q14", q: "[Q14] Which substance composes the rigid exoskeleton of insects?", options: ["A. Lignin", "B. Chitin", "C. Cellulose", "D. Keratin"], ans: "B" },
+            { id: "q15", q: "[Q15] The main function of the proboscis in adult butterflies is to:", options: ["A. Chew floral leaves", "B. Siphon floral nectar", "C. Filter airborne pollen", "D. Pierce plant stems"], ans: "B" },
+            { id: "q16", q: "[Q16] Which of the following diseases is transmitted by houseflies acting as mechanical vectors?", options: ["A. Malaria", "B. Typhoid fever", "C. Dengue fever", "D. Sleeping sickness"], ans: "B" },
+            { id: "q17", q: "[Q17] Royal jelly is secreted by young worker bees to feed:", options: ["A. All adult worker bees throughout life", "B. Developing larvae destined to become queens", "C. Male drones during winter months", "D. Older field foraging bees"], ans: "B" },
+            { id: "q18", q: "[Q18] Insects shed their rigid chitinous exoskeleton periodically during growth in a process termed:", options: ["A. Metamorphosis", "B. Ecdysis (Moulting)", "C. Conjugation", "D. Encystment"], ans: "B" },
+            { id: "q19", q: "[Q19] Housefly larvae are commonly referred to as:", options: ["A. Caterpillars", "B. Maggots", "C. Nymphs", "D. Grubs"], ans: "B" },
+            { id: "q20", q: "[Q20] The body of an adult insect is divided into three main regions:", options: ["A. Cephalothorax, abdomen, tail", "B. Head, thorax, abdomen", "C. Head, trunk, appendage", "D. Thorax, abdomen, pygidium"], ans: "B" },
+            { id: "q21", q: "[Q21] How many pairs of jointed legs are attached to the thorax of an adult insect?", options: ["A. 2 pairs", "B. 3 pairs", "C. 4 pairs", "D. 5 pairs"], ans: "B" },
+            { id: "q22", q: "[Q22] Which insect pest causes major economic loss by boring into stored maize and wheat grains?", options: ["A. Honeybee", "B. Grain weevil", "C. Butterfly larva", "D. Termite"], ans: "B" },
+            { id: "q23", q: "[Q23] Halteres in flies (Diptera) are modified hindwings used for:", options: ["A. Propulsion during flight", "B. Balance and flight stabilization", "C. Sound production during mating", "D. Storing metabolic water"], ans: "B" },
+            { id: "q24", q: "[Q24] Which insect displays a caste system consisting of a queen, drones, and workers?", options: ["A. Housefly", "B. Honeybee", "C. Butterfly", "D. Grain weevil"], ans: "B" },
+            { id: "q25", q: "[Q25] What type of development is shown by insects that hatch into nymphs resembling miniature adults?", options: ["A. Holometabolous", "B. Hemimetabolous (Incomplete)", "C. Ametabolous", "D. Endopterygote"], ans: "B" },
+
+            // PART 2: ECOSYSTEMS & HABITATS (Q26 - Q50)
+            { id: "q26", q: "[Q26] Tropical rainforests are characterized by high rainfall and vegetation organized into distinct vertical layers called:", options: ["A. Horizons", "B. Strata (Canopy layers)", "C. Zones", "D. Meadows"], ans: "B" },
+            { id: "q27", q: "[Q27] Savannah ecosystems are predominantly characterized by:", options: ["A. Dense broadleaf evergreen trees", "B. Continuous grasslands dotted with scattered drought-resistant trees", "C. Sub-zero temperatures and permafrost", "D. Submerged aquatic vegetation"], ans: "B" },
+            { id: "q28", q: "[Q28] Plants adapted to survive in arid desert habitats with low rainfall are called:", options: ["A. Mesophytes", "B. Xerophytes", "C. Hydrophytes", "D. Halophytes"], ans: "B" },
+            { id: "q29", q: "[Q29] An estuarine habitat is created where:", options: ["A. Fresh mountain streams meet lakes", "B. Freshwater rivers meet and mix with saltwater oceans", "C. Underground springs bubble up in deserts", "D. Rainwater collects in forest hollows"], ans: "B" },
+            { id: "q30", q: "[Q30] Halophytes are plants specifically adapted to thrive in conditions of:", options: ["A. Freezing temperatures", "B. High soil salinity", "C. Low light intensity", "D. Extreme water deficit"], ans: "B" },
+            { id: "q31", q: "[Q31] Buttress roots in tropical rainforest trees provide support against winds and help absorb nutrients from:", options: ["A. Deep subterranean aquifers", "B. Thin topsoil layers", "C. Bedrock formations", "D. Atmospheric moisture"], ans: "B" },
+            { id: "q32", q: "[Q32] Succulent stems in desert cacti function primarily to:", options: ["A. Perform rapid cellular respiration", "B. Store large amounts of water", "C. Attract pollinating insects", "D. Prevent herbivore browsing"], ans: "B" },
+            { id: "q33", q: "[Q33] Pneumatophores (breathing roots) are essential adaptations for mangrove plants in estuaries because they:", options: ["A. Anchor trees in loose sand", "B. Obtain oxygen in waterlogged, anoxic mud", "C. Excrete excess absorbed salts", "D. Store metabolic starches"], ans: "B" },
+            { id: "q34", q: "[Q34] A key ecological feature of African savannahs is the presence of periodic:", options: ["A. Glacial movements", "B. Bushfires and seasonal droughts", "C. Volcanic ash covers", "D. Ocean tides"], ans: "B" },
+            { id: "q35", q: "[Q35] Epiphytes in rainforests grow on higher tree branches primarily to compete for:", options: ["A. Soil nutrients", "B. Sunlight", "C. Pollinators", "D. Carbon dioxide"], ans: "B" },
+            { id: "q36", q: "[Q36] The brackish water of an estuary has a salinity level that is:", options: ["A. Equal to pure distilled water", "B. Intermediate between fresh river water and ocean water", "C. Higher than the Dead Sea", "D. Identical to open ocean water"], ans: "B" },
+            { id: "q37", q: "[Q37] Camel adaptations for desert survival include reduced sweating, concentrated urine, and fat storage in humps for:", options: ["A. Direct heat conversion", "B. Metabolic water production and energy storage", "C. Salt excretion", "D. Buoyancy in flash floods"], ans: "B" },
+            { id: "q38", q: "[Q38] The canopy layer in a tropical rainforest receives the majority of:", options: ["A. Ground runoff water", "B. Solar radiation and rainfall", "C. Decomposing organic matter", "D. Carbonic acid deposits"], ans: "B" },
+            { id: "q39", q: "[Q39] Thick waxy cuticles on leaves of xerophytic plants serve to reduce:", options: ["A. Photosynthesis", "B. Transpiration water loss", "C. Oxygen absorption", "D. Root pressure"], ans: "B" },
+            { id: "q40", q: "[Q40] In an estuarine ecosystem, organisms must adapt to rapid fluctuations in:", options: ["A. Atmospheric nitrogen levels", "B. Salinity and water level (tides)", "C. Solar radiation angle", "D. Soil tectonic pressure"], ans: "B" },
+            { id: "q41", q: "[Q41] The functional role and position an organism occupies within its environment is its:", options: ["A. Biome", "B. Ecological niche", "C. Habitat", "D. Trophic level"], ans: "B" },
+            { id: "q42", q: "[Q42] Primary producers in marine and estuarine ecosystems consist mainly of:", options: ["A. Zooplankton", "B. Phytoplankton", "C. Benthic decomposers", "D. Pelagic fish"], ans: "B" },
+            { id: "q43", q: "[Q43] Savanna grasses survive dry seasons and bushfires primarily because their growing points are located:", options: ["A. High above tree canopy", "B. Underground or near soil surface", "C. In bark crevices", "D. Within leaf tips"], ans: "B" },
+            { id: "q44", q: "[Q44] Desert animals that are active primarily during the night to avoid heat are termed:", options: ["A. Diurnal", "B. Nocturnal", "C. Crepuscular", "D. Arboreal"], ans: "B" },
+            { id: "q45", q: "[Q45] Broad, flat leaf laminas are common in rainforest understory plants to optimize:", options: ["A. Water shedding", "B. Absorption of low-intensity light", "C. Resistance to heavy winds", "D. Heat loss"], ans: "B" },
+            { id: "q46", q: "[Q46] Salt-excreting glands on leaves are a prominent feature of which vegetation type?", options: ["A. Desert cacti", "B. Mangroves", "C. Alpine mosses", "D. Savannah grasses"], ans: "B" },
+            { id: "q47", q: "[Q47] What term describes a stable, mature ecological community that undergoes little change in species composition over time?", options: ["A. Pioneer community", "B. Climax community", "C. Seral stage", "D. Transitional biome"], ans: "B" },
+            { id: "q48", q: "[Q48] Deciduous trees in temperate or dry forests drop their leaves seasonally to conserve:", options: ["A. Nitrogen", "B. Water", "C. Oxygen", "D. Chlorophyll"], ans: "B" },
+            { id: "q49", q: "[Q49] Sunken stomata protected by epidermal hairs in pine needles and desert leaves serve to:", options: ["A. Increase rate of transpiration", "B. Traip moist air and reduce water loss", "C. Maximize carbon dioxide intake at night", "D. Excrete metabolic salts"], ans: "B" },
+            { id: "q50", q: "[Q50] The zone in an aquatic ecosystem where light penetration is sufficient for photosynthesis is called the:", options: ["A. Aphotic zone", "B. Photic (Euphotic) zone", "C. Abyssal zone", "D. Benthic zone"], ans: "B" },
+
+            // PART 3: CYTOLOGY & CELL STRUCTURE (Q51 - Q75)
+            { id: "q51", q: "[Q51] Which of the following is NOT one of the core tenets of classic Cell Theory?", options: ["A. All living organisms are composed of one or more cells", "B. Cells arise spontaneously from non-living matter", "C. The cell is the fundamental structural unit of life", "D. All existing cells arise from pre-existing cells"], ans: "B" },
+            { id: "q52", q: "[Q52] Prokaryotic cells differ fundamentally from eukaryotic cells because prokaryotes lack:", options: ["A. A plasma membrane", "B. A membrane-bound nucleus", "C. Cytoplasm", "D. Ribosomes"], ans: "B" },
+            { id: "q53", q: "[Q53] Which organelle is known as the site of aerobic respiration and ATP generation?", options: ["A. Chloroplast", "B. Mitochondrion", "C. Golgi apparatus", "D. Endoplasmic reticulum"], ans: "B" },
+            { id: "q54", q: "[Q54] The fluid mosaic model describes the structure and behavior of the:", options: ["A. Cell wall", "B. Plasma membrane", "C. Nuclear envelope", "D. Cytoskeleton"], ans: "B" },
+            { id: "q55", q: "[Q55] Ribosomes are cellular structures primarily responsible for:", options: ["A. Lipid synthesis", "B. Protein synthesis", "C. Carbohydrate breakdown", "D. Nucleic acid replication"], ans: "B" },
+            { id: "q56", q: "[Q56] Which organelle modifies, sorts, and packages proteins for transport or secretion?", options: ["A. Lysosome", "B. Golgi apparatus", "C. Rough ER", "D. Peroxisome"], ans: "B" },
+            { id: "q57", q: "[Q57] Plant cell walls are primarily composed of which structural polysaccharide?", options: ["A. Glycogen", "B. Cellulose", "C. Starch", "D. Chitin"], ans: "B" },
+            { id: "q58", q: "[Q58] Lysosomes contain hydrolytic enzymes involved in:", options: ["A. Photosynthetic carbon fixation", "B. Intracellular digestion and organelle breakdown", "C. Lipid oxidation", "D. Ribosome assembly"], ans: "B" },
+            { id: "q59", q: "[Q59] The smooth endoplasmic reticulum plays a key role in the synthesis of:", options: ["A. Nucleic acids", "B. Lipids and steroids", "C. Structural proteins", "D. Polysaccharide walls"], ans: "B" },
+            { id: "q60", q: "[Q60] Chloroplasts contain stacks of thylakoid membranes known as:", options: ["A. Stroma", "B. Grana", "C. Cristae", "D. Matrix"], ans: "B" },
+            { id: "q61", q: "[Q61] The nucleolus within the nucleus is the primary site for the assembly of:", options: ["A. Transfer RNA", "B. Ribosomal subunits", "C. Messenger RNA transcripts", "D. DNA polymerases"], ans: "B" },
+            { id: "q62", q: "[Q62] Movement of water molecules across a selectively permeable membrane from higher to lower water potential is:", options: ["A. Simple diffusion", "B. Osmosis", "C. Active transport", "D. Facilitated diffusion"], ans: "B" },
+            { id: "q63", q: "[Q63] Active transport across a cell membrane differs from passive transport because active transport:", options: ["A. Moves substances down concentration gradients without energy", "B. Requires ATP to move substances against concentration gradients", "C. Occurs only in dead cell membranes", "D. Moves only gas molecules"], ans: "B" },
+            { id: "q64", q: "[Q64] A plant cell placed in a hypertonic solution will undergo:", options: ["A. Lysis", "B. Plasmolysis", "C. Turgidity", "D. De-plasmolysis"], ans: "B" },
+            { id: "q65", q: "[Q65] Red blood cells placed in a hypotonic solution will swell and burst in a process called:", options: ["A. Crenation", "B. Hemolysis", "C. Plasmolysis", "D. Cyclosis"], ans: "B" },
+            { id: "q66", q: "[Q66] Which cytoskeletal element forms spindle fibers during cell division?", options: ["A. Actin microfilaments", "B. Microtubules", "C. Intermediate filaments", "D. Myosin fibers"], ans: "B" },
+            { id: "q67", q: "[Q67] Intercellular connections that allow direct cytoplasm-to-cytoplasm transport between adjacent plant cells are:", options: ["A. Desmosomes", "B. Plasmodesmata", "C. Tight junctions", "D. Gap junctions"], ans: "B" },
+            { id: "q68", q: "[Q68] Which cellular process involves the engulfment of large solid particles into a vesicle by the plasma membrane?", options: ["A. Pinocytosis", "B. Phagocytosis", "C. Exocytosis", "D. Receptor-mediated diffusion"], ans: "B" },
+            { id: "q69", q: "[Q69] Mitochondria inner membranes are folded into finger-like projections called:", options: ["A. Thylakoids", "B. Cristae", "C. Cisternae", "D. Grana"], ans: "B" },
+            { id: "q70", q: "[Q70] What organelle is studded with ribosomes and involved in protein synthesis and processing?", options: ["A. Smooth ER", "B. Rough ER", "C. Vacuole", "D. Peroxisome"], ans: "B" },
+            { id: "q71", q: "[Q71] In eukaryotic cells, genetic material is organized into linear DNA bound to proteins called:", options: ["A. Plasmids", "B. Histones", "C. Capsids", "D. Prions"], ans: "B" },
+            { id: "q72", q: "[Q72] Large central vacuoles in mature plant cells help maintain cell rigidity by generating:", options: ["A. Osmotic suction", "B. Turgor pressure", "C. Atmospheric pressure", "D. Capillary action"], ans: "B" },
+            { id: "q73", q: "[Q73] Which scientist is credited with coining the term 'cell' after observing cork under a microscope?", options: ["A. Anton van Leeuwenhoek", "B. Robert Hooke", "C. Matthias Schleiden", "D. Theodor Schwann"], ans: "B" },
+            { id: "q74", q: "[Q74] Pinocytosis is a form of endocytosis specifically involved in taking up:", options: ["A. Solid bacterial cells", "B. Extracellular fluid and dissolved droplets", "C. Metabolic gas bubbles", "D. Intact organelles"], ans: "B" },
+            { id: "q75", q: "[Q75] Peroxisomes contain enzymes that neutralize toxic hydrogen peroxide into water and oxygen using:", options: ["A. Amylase", "B. Catalase", "C. Pepsin", "D. DNA Ligase"], ans: "B" },
+
+            // PART 4: MOLECULAR GENETICS & PROTEIN SYNTHESIS (Q76 - Q100)
+            { id: "q76", q: "[Q76] DNA molecules are composed of nucleotide monomers containing a nitrogenous base, phosphate, and which sugar?", options: ["A. Ribose", "B. Deoxyribose", "C. Glucose", "D. Fructose"], ans: "B" },
+            { id: "q77", q: "[Q77] According to Chargaff's rules of base pairing in double-stranded DNA:", options: ["A. Adenine pairs with Cytosine", "B. Adenine pairs with Thymine, Cytosine pairs with Guanine", "C. Adenine pairs with Uracil", "D. Guanine pairs with Thymine"], ans: "B" },
+            { id: "q78", q: "[Q78] DNA replication is described as semi-conservative because each new double helix consists of:", options: ["A. Two newly synthesized strands", "B. One original parent strand and one newly synthesized strand", "C. Two original parent strands", "D. Dispersed fragments of old and new strands"], ans: "B" },
+            { id: "q79", q: "[Q79] Which enzyme unzips the DNA double helix during replication by breaking hydrogen bonds?", options: ["A. DNA Polymerase", "B. DNA Helicase", "C. DNA Ligase", "D. RNA Primase"], ans: "B" },
+            { id: "q80", q: "[Q80] The enzyme that synthesizes a new DNA strand in the 5' to 3' direction is:", options: ["A. RNA Polymerase", "B. DNA Polymerase", "C. Topoisomerase", "D. Helicase"], ans: "B" },
+            { id: "q81", q: "[Q81] Okazaki fragments are synthesized on which strand during DNA replication?", options: ["A. Leading strand", "B. Lagging strand", "C. Template RNA strand", "D. Coding strand"], ans: "B" },
+            { id: "q82", q: "[Q82] The enzyme that seals nicked sugar-phosphate backbones by joining Okazaki fragments is:", options: ["A. Helicase", "B. DNA Ligase", "C. Primase", "D. Gyrase"], ans: "B" },
+            { id: "q83", q: "[Q83] Transcription is the process in which genetic information is copied from DNA into:", options: ["A. Polypeptides", "B. Messenger RNA (mRNA)", "C. Transfer RNA (tRNA)", "D. Ribosomal RNA (rRNA)"], ans: "B" },
+            { id: "q84", q: "[Q84] Which nitrogenous base replaces Thymine in RNA molecules?", options: ["A. Adenine", "B. Uracil", "C. Cytosine", "D. Guanine"], ans: "B" },
+            { id: "q85", q: "[Q85] The sequence of three nucleotides on mRNA that specifies a particular amino acid is a:", options: ["A. Anticodon", "B. Codon", "C. Cistron", "D. Intron"], ans: "B" },
+            { id: "q86", q: "[Q86] Transfer RNA (tRNA) molecules carry amino acids to ribosomes and bind to mRNA codons using their:", options: ["A. Promoters", "B. Anticodons", "C. Exons", "D. Primers"], ans: "B" },
+            { id: "q87", q: "[Q87] Translation occurs in which cellular location?", options: ["A. Nucleolus", "B. Ribosome in the cytoplasm", "C. Inner mitochondrial membrane", "D. Lysosome"], ans: "B" },
+            { id: "q88", q: "[Q88] Non-coding sequences removed from pre-mRNA during RNA splicing in eukaryotes are called:", options: ["A. Exons", "B. Introns", "C. Codons", "D. Operators"], ans: "B" },
+            { id: "q89", q: "[Q89] What is the universal start codon that initiates translation and codes for methionine?", options: ["A. UAA", "B. AUG", "C. UGA", "D. UAG"], ans: "B" },
+            { id: "q90", q: "[Q90] Which of the following codons functions as a stop codon to terminate translation?", options: ["A. AUG", "B. UAA", "C. UAC", "D. UGG"], ans: "B" },
+            { id: "q91", q: "[Q91] The central dogma of molecular biology outlines the flow of genetic information as:", options: ["A. Protein -> RNA -> DNA", "B. DNA -> RNA -> Protein", "C. RNA -> DNA -> Protein", "D. Protein -> DNA -> RNA"], ans: "B" },
+            { id: "q92", q: "[Q92] A point mutation that alters a codon to code for a different amino acid is called a:", options: ["A. Silent mutation", "B. Missense mutation", "C. Nonsense mutation", "D. Frameshift mutation"], ans: "B" },
+            { id: "q93", q: "[Q93] Insertion or deletion of a nucleotide number not divisible by three results in a:", options: ["A. Substitution mutation", "B. Frameshift mutation", "C. Silent mutation", "D. Inversion"], ans: "B" },
+            { id: "q94", q: "[Q94] Small circular DNA molecules found in bacteria separate from chromosomal DNA are:", options: ["A. Bacteriophages", "B. Plasmids", "C. Transposons", "D. Centromeres"], ans: "B" },
+            { id: "q95", q: "[Q95] Which enzyme synthesizes an RNA primer required to initiate DNA replication?", options: ["A. DNA Ligase", "B. RNA Primase", "C. Reverse transcriptase", "D. Exonuclease"], ans: "B" },
+            { id: "q96", q: "[Q96] In DNA, purines pair with pyrimidines. Which bases are classified as purines?", options: ["A. Cytosine and Thymine", "B. Adenine and Guanine", "C. Cytosine and Uracil", "D. Thymine and Uracil"], ans: "B" },
+            { id: "q97", q: "[Q97] Adjacent amino acids in a polypeptide chain are linked together by:", options: ["A. Phosphodiester bonds", "B. Peptide bonds", "C. Hydrogen bonds", "D. Glycosidic bonds"], ans: "B" },
+            { id: "q98", q: "[Q98] Reverse transcription is a process performed by retroviruses to synthesize:", options: ["A. Protein from RNA", "B. DNA from an RNA template", "C. RNA from a protein template", "D. Polysaccharides from DNA"], ans: "B" },
+            { id: "q99", q: "[Q99] Chromosomes align along the cell equator during which phase of mitosis?", options: ["A. Prophase", "B. Metaphase", "C. Anaphase", "D. Telophase"], ans: "B" },
+            { id: "q100", q: "[Q100] Sister chromatids are pulled apart to opposite poles during which phase of mitosis?", options: ["A. Metaphase", "B. Anaphase", "C. Telophase", "D. Interphase"], ans: "B" }
+        ];
+
+        let currentStudent = "";
+        let timerInterval = null;
+        let secondsLeft = 3600;
+        let warningCount = 0;
+        let studentAnswers = {};
+        let isExamActive = false;
+        let studentRecords = JSON.parse(localStorage.getItem("sir_samuel_sec3_100_results")) || [];
+
+        function renderSection3Questions() {
+            const wrapper = document.getElementById('mcq-sec3-wrapper');
+            wrapper.innerHTML = "";
+
+            section3Questions.forEach((qObj) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = 'question';
+                let optionsHtml = "";
+                qObj.options.forEach(opt => {
+                    optionsHtml += `<li><label>
+                        <input type="radio" name="${qObj.id}" value="${opt}" onchange="autoSaveAnswer('${qObj.id}', '${opt}')"> 
+                        ${opt}
+                    </label></li>`;
+                });
+                qDiv.innerHTML = `<p>${qObj.q}</p><ul class="options">${optionsHtml}</ul>`;
+                wrapper.appendChild(qDiv);
+            });
+        }
+
+        function autoSaveAnswer(qId, val) {
+            studentAnswers[qId] = val.trim();
+        }
+
+        function initAntiCheatListeners() {
+            document.addEventListener("visibilitychange", () => {
+                if (isExamActive && document.hidden) {
+                    triggerWarning("Tab switch detected! Stay focused on your test.");
+                }
+            });
+
+            window.addEventListener("blur", () => {
+                if (isExamActive) {
+                    triggerWarning("Window lost focus! Stay on the active exam window.");
+                }
+            });
+        }
+
+        function triggerWarning(msg) {
+            warningCount++;
+            document.getElementById('warning-count-display').textContent = warningCount;
+
+            const bot = document.getElementById('floating-ai-bot');
+            const bubble = document.getElementById('speech-bubble');
+            bot.classList.add('angry');
+            bubble.textContent = `⚠️ Warning #${warningCount}: ${msg}`;
+            bubble.classList.add('visible');
+
+            setTimeout(() => {
+                bot.classList.remove('angry');
+                bubble.classList.remove('visible');
+            }, 4000);
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            const bot = document.getElementById('floating-ai-bot');
+            bot.style.display = (screenId === 'exam-screen') ? 'block' : 'none';
+        }
+
+        function startTest() {
+            const nameInput = document.getElementById('student-name-input').value.trim();
+            if (!nameInput) {
+                alert("Please enter your full name before taking the test!");
+                return;
+            }
+
+            currentStudent = nameInput;
+            document.getElementById('display-student-name').textContent = currentStudent;
+            
+            warningCount = 0;
+            document.getElementById('warning-count-display').textContent = warningCount;
+
+            renderSection3Questions();
+            showScreen('exam-screen');
+            isExamActive = true;
+            
+            initAntiCheatListeners();
+            startTimer();
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                secondsLeft--;
+                let m = Math.floor(secondsLeft / 60);
+                let s = secondsLeft % 60;
+                document.getElementById('timer-display').textContent = 
+                    `00:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                
+                if (secondsLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitTest();
+                }
+            }, 1000);
+        }
+
+        function submitTest() {
+            isExamActive = false;
+            clearInterval(timerInterval);
+
+            let rawScore = 0;
+            const totalQuestions = 100;
+
+            section3Questions.forEach(q => {
+                const userSelected = studentAnswers[q.id] || "";
+                if (userSelected.startsWith(q.ans)) {
+                    rawScore++;
+                }
+            });
+
+            const deductionPoints = warningCount * 2;
+            const finalScore = Math.max(0, rawScore - deductionPoints);
+            const percentage = Math.round((finalScore / totalQuestions) * 100);
+
+            const record = {
+                name: currentStudent,
+                warnings: warningCount,
+                deduction: deductionPoints,
+                finalScore: `${finalScore} / ${totalQuestions}`,
+                percentage: `${percentage}%`,
+                timestamp: new Date().toLocaleTimeString()
+            };
+
+            studentRecords.push(record);
+            localStorage.setItem("sir_samuel_sec3_100_results", JSON.stringify(studentRecords));
+
+            document.getElementById('result-student-name').textContent = currentStudent;
+            document.getElementById('score-display').textContent = `${finalScore} / ${totalQuestions} Marks`;
+            document.getElementById('percentage-display').textContent = `${percentage}%`;
+
+            const notice = document.getElementById('deduction-notice');
+            if (deductionPoints > 0) {
+                notice.textContent = `⚠️ Penalty Applied: -${deductionPoints} Marks (${warningCount} Warning(s) x 2 Marks)`;
+            } else {
+                notice.textContent = "✨ Excellent Integrity! Zero Deductions Applied.";
+            }
+
+            renderReviewSection();
+            showScreen('results-screen');
+            launchBalloons();
+        }
+
+        function launchBalloons() {
+            const container = document.getElementById("balloon-container");
+            container.innerHTML = "";
+            const colors = ["#ef4444", "#3b82f6", "#10b981", "#f59e0b", "#8b5cf6", "#ec4899"];
+
+            for (let i = 0; i < 35; i++) {
+                const balloon = document.createElement("div");
+                balloon.className = "balloon";
+                balloon.style.left = `${Math.random() * 95}vw`;
+                balloon.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                balloon.style.animationDelay = `${Math.random() * 1.2}s`;
+                container.appendChild(balloon);
+            }
+
+            setTimeout(() => { container.innerHTML = ""; }, 5000);
+        }
+
+        function renderReviewSection() {
+            const reviewWrapper = document.getElementById('review-questions-wrapper');
+            reviewWrapper.innerHTML = "";
+
+            section3Questions.forEach((qObj) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = 'question';
+                const selectedOpt = studentAnswers[qObj.id] || "No Answer Selected";
+                let optionsHtml = "";
+
+                qObj.options.forEach(opt => {
+                    let optClass = "";
+                    const isCorrect = opt.startsWith(qObj.ans);
+                    const isSelected = (opt === selectedOpt);
+
+                    if (isCorrect) optClass = "option-correct";
+                    else if (isSelected && !isCorrect) optClass = "option-wrong";
+
+                    optionsHtml += `<li class="${optClass}" style="padding: 8px; margin-bottom: 4px; border-radius: 4px;">
+                        ${opt} ${isCorrect ? ' ✔ (Correct Answer)' : ''} ${isSelected && !isCorrect ? ' ✖ (Your Choice)' : ''}
+                    </li>`;
+                });
+
+                qDiv.innerHTML = `<p>${qObj.q}</p><ul class="options">${optionsHtml}</ul>`;
+                reviewWrapper.appendChild(qDiv);
+            });
+        }
+
+        function toggleReviewSection() {
+            const revSec = document.getElementById('review-section');
+            const btn = document.getElementById('review-btn');
+            if (revSec.style.display === 'none') {
+                revSec.style.display = 'block';
+                btn.textContent = "🙈 Hide Review Section";
+                revSec.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                revSec.style.display = 'none';
+                btn.textContent = "🔍 View Answer Key & Review Mistakes";
+            }
+        }
+
+        function renderTeacherTable() {
+            const tableBody = document.getElementById('results-table-body');
+            tableBody.innerHTML = "";
+            
+            if (studentRecords.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center;">No test submissions yet.</td></tr>`;
+                document.getElementById('total-candidates-val').textContent = "0";
+                document.getElementById('class-avg-val').textContent = "0%";
+                document.getElementById('highest-score-val').textContent = "0 / 100";
+            } else {
+                let totalPercentage = 0;
+                let highest = 0;
+
+                studentRecords.forEach(rec => {
+                    const pVal = parseInt(rec.percentage);
+                    totalPercentage += pVal;
+                    if (pVal > highest) highest = pVal;
+
+                    tableBody.innerHTML += `<tr>
+                        <td><strong>${rec.name}</strong></td>
+                        <td style="color:#dc2626; font-weight:bold;">${rec.warnings || 0}</td>
+                        <td style="color:#dc2626;">-${rec.deduction || 0}</td>
+                        <td>${rec.finalScore}</td>
+                        <td><strong>${rec.percentage}</strong></td>
+                        <td>${rec.timestamp}</td>
+                    </tr>`;
+                });
+
+                document.getElementById('total-candidates-val').textContent = studentRecords.length;
+                document.getElementById('class-avg-val').textContent = `${Math.round(totalPercentage / studentRecords.length)}%`;
+                document.getElementById('highest-score-val').textContent = `${highest}%`;
+            }
+        }
+
+        function showTeacherDashboard() {
+            const passcode = prompt("Enter Teacher Passcode:");
+            if (passcode === "Sammy112233") { 
+                renderTeacherTable();
+                showScreen('teacher-screen');
+            } else if (passcode !== null) {
+                alert("Incorrect Passcode!");
+            }
+        }
+
+        function exportToCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,Student Name,Warnings,Deductions,Final Score,Percentage,Time\n";
+            studentRecords.forEach(rec => {
+                csvContent += `"${rec.name}",${rec.warnings || 0},-${rec.deduction || 0},"${rec.finalScore}","${rec.percentage}","${rec.timestamp}"\n`;
+            });
+            const link = document.createElement("a");
+            link.setAttribute("href", encodeURI(csvContent));
+            link.setAttribute("download", `section3_biology_100_results.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function clearDashboardData() {
+            if (confirm("Clear all student submissions?")) {
+                studentRecords = [];
+                localStorage.removeItem("sir_samuel_sec3_100_results");
+                renderTeacherTable();
+            }
+        }
+
+        function resetToLogin() {
+            location.reload();
+        }
+    </script>
+</body>
+</html>
